@@ -3,7 +3,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   Search, Book, Code, MessageCircle, LifeBuoy, FileText, Video, ExternalLink, 
-  Plus, Send, Bot, User, MessageSquare, Trash2, Sparkles, MoreHorizontal, History 
+  Plus, Send, Bot, User, MessageSquare, Trash2, Sparkles, MoreHorizontal, History,
+  Image, Paperclip
 } from 'lucide-react';
 import { Page } from '../types';
 
@@ -360,21 +361,42 @@ export const HelpCenter: React.FC = () => {
 
         {/* Input Area */}
         <div className="p-4 border-t border-gray-700 bg-gray-800">
-          <div className="relative">
+          <div className="w-full bg-gray-900 border border-gray-600 rounded-xl flex items-center px-2 py-2 gap-2 shadow-sm focus-within:ring-1 focus-within:ring-blue-500 focus-within:border-blue-500 transition-all">
+            
+            {/* Action Buttons */}
+            <div className="flex items-center gap-1 pl-1">
+                <button className="p-2 text-gray-400 hover:text-gray-200 hover:bg-gray-800 rounded-lg transition-colors">
+                    <Plus className="w-5 h-5" />
+                </button>
+                <button className="p-2 text-gray-400 hover:text-gray-200 hover:bg-gray-800 rounded-lg transition-colors">
+                    <Image className="w-5 h-5" />
+                </button>
+                <button className="p-2 text-gray-400 hover:text-gray-200 hover:bg-gray-800 rounded-lg transition-colors">
+                    <Paperclip className="w-5 h-5" />
+                </button>
+            </div>
+
+            {/* Input Field */}
             <input 
               type="text" 
               value={inputMessage}
               onChange={(e) => setInputMessage(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
-              placeholder="Type your question..." 
-              className="w-full bg-gray-900 border border-gray-600 rounded-xl pl-4 pr-12 py-3 text-sm text-gray-200 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all placeholder-gray-500"
+              placeholder="Type your messages..." 
+              className="flex-1 bg-transparent border-none text-sm text-gray-200 outline-none placeholder-gray-500 px-2 h-10"
             />
+
+            {/* Send Button */}
             <button 
               onClick={handleSendMessage}
               disabled={!inputMessage.trim() || isTyping}
-              className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-blue-600 hover:bg-blue-500 disabled:bg-gray-700 disabled:text-gray-500 text-white rounded-lg transition-colors"
+              className={`p-2 rounded-lg transition-colors mr-1 ${
+                  !inputMessage.trim() || isTyping 
+                  ? 'text-gray-600 cursor-not-allowed' 
+                  : 'text-white hover:text-blue-400'
+              }`}
             >
-              <Send className="w-4 h-4" />
+              <Send className={`w-5 h-5 ${!inputMessage.trim() || isTyping ? '' : 'fill-current'}`} />
             </button>
           </div>
           <p className="text-[10px] text-gray-500 mt-2 text-center">
