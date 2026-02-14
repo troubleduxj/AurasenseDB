@@ -45,9 +45,14 @@ import {
   CreditCard,
   Sparkles,
   User,
-  ChevronsUpDown
+  ChevronsUpDown,
+  Palette,
+  Monitor,
+  Wrench,
+  HelpCircle
 } from 'lucide-react';
 import { Page } from '../types';
+import { useSystem } from '../contexts/SystemContext';
 
 interface SidebarProps {
   isOpen?: boolean;
@@ -56,6 +61,7 @@ interface SidebarProps {
 export const Sidebar: React.FC<SidebarProps> = ({ isOpen = true }) => {
   const location = useLocation();
   const currentPath = location.pathname.substring(1);
+  const { platformName } = useSystem();
   
   // State to manage expanded menus.
   const [expandedMenus, setExpandedMenus] = useState<string[]>([]);
@@ -68,24 +74,17 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen = true }) => {
   const profileRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (currentPath.startsWith('ingestion')) {
-        setExpandedMenus(prev => prev.includes('ingestion') ? prev : [...prev, 'ingestion']);
-    }
-    if (currentPath.startsWith('metadata')) {
-        setExpandedMenus(prev => prev.includes('metadata') ? prev : [...prev, 'metadata']);
-    }
-    if (currentPath.startsWith('computing')) {
-        setExpandedMenus(prev => prev.includes('computing') ? prev : [...prev, 'computing']);
-    }
-    if (currentPath.startsWith('query')) {
-        setExpandedMenus(prev => prev.includes('query') ? prev : [...prev, 'query']);
-    }
-    if (currentPath.startsWith('operations')) {
-        setExpandedMenus(prev => prev.includes('operations') ? prev : [...prev, 'operations']);
-    }
-    if (currentPath.startsWith('system')) {
-        setExpandedMenus(prev => prev.includes('system') ? prev : [...prev, 'system']);
-    }
+    const expand = (id: string) => {
+        setExpandedMenus(prev => prev.includes(id) ? prev : [...prev, id]);
+    };
+
+    if (currentPath.startsWith('ingestion')) expand('ingestion');
+    if (currentPath.startsWith('metadata')) expand('metadata');
+    if (currentPath.startsWith('computing')) expand('computing');
+    if (currentPath.startsWith('query')) expand('query');
+    if (currentPath.startsWith('operations')) expand('operations');
+    if (currentPath.startsWith('system')) expand('system');
+    if (currentPath.startsWith('settings')) expand('settings-bottom');
   }, [currentPath]);
 
   // Close profile menu on click outside
@@ -192,7 +191,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen = true }) => {
     { 
       id: 'system', 
       label: 'System Center', 
-      icon: Settings,
+      icon: Sliders,
       subItems: [
         { id: Page.SYSTEM_SETTINGS, label: 'System Settings', icon: Sliders },
         { id: Page.SYSTEM_CONNECT, label: 'Connect Settings', icon: Link2 },
@@ -202,6 +201,107 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen = true }) => {
     },
     { id: Page.ECOSYSTEM, label: 'Ecosystem', icon: Share2 },
   ];
+
+  const bottomMenuItems = [
+    {
+      id: 'settings-bottom',
+      label: 'Settings',
+      icon: Settings,
+      subItems: [
+        { id: 'settings/profile', label: 'Profile', icon: User },
+        { id: 'settings/account', label: 'Account', icon: Wrench },
+        { id: 'settings/appearance', label: 'Appearance', icon: Palette },
+        { id: 'settings/notifications', label: 'Notifications', icon: Bell },
+        { id: 'settings/display', label: 'Display', icon: Monitor },
+      ]
+    },
+    {
+      id: Page.HELP_CENTER,
+      label: 'Help Center',
+      icon: HelpCircle
+    }
+  ];
+
+  const renderMenuItem = (item: any) => {
+    const isExpanded = expandedMenus.includes(item.id);
+    const isParentActive = currentPath === item.id || (item.subItems && currentPath.startsWith(item.id));
+    
+    if (item.subItems) {
+       return (
+         <div key={item.id} className="relative group">
+           <button
+              onClick={() => toggleMenu(item.id)}
+              onMouseEnter={(e) => handleMouseEnter(e, item.label)}
+              onMouseLeave={handleMouseLeave}
+              className={`w-full flex items-center rounded-lg transition-colors group/btn relative ${
+                isOpen 
+                  ? 'justify-between px-3 py-2.5' 
+                  : 'justify-center p-2.5'
+              } ${
+                isParentActive 
+                  ? 'text-blue-400' 
+                  : 'text-gray-400 hover:bg-gray-700/50 hover:text-gray-100'
+              }`}
+            >
+              <div className="flex items-center">
+                <item.icon className={`w-5 h-5 shrink-0 ${isOpen ? 'mr-3' : ''} ${isParentActive ? 'text-blue-400' : 'text-gray-500 group-hover/btn:text-gray-300'}`} />
+                {isOpen && <span className="font-medium whitespace-nowrap">{item.label}</span>}
+              </div>
+              {isOpen && (isExpanded ? <ChevronDown className="w-4 h-4 shrink-0" /> : <ChevronRight className="w-4 h-4 shrink-0" />)}
+            </button>
+            
+            {/* Submenu - Only visible when open */}
+            {isOpen && isExpanded && (
+              <div className="ml-4 pl-4 border-l border-gray-700 mt-1 space-y-1">
+                {item.subItems.map((sub: any) => {
+                  const isSubActive = currentPath === sub.id;
+                  return (
+                    <Link
+                      key={sub.id}
+                      to={`/${sub.id}`}
+                      className={`flex items-center px-3 py-2 rounded-lg text-sm transition-colors whitespace-nowrap ${
+                        isSubActive 
+                          ? 'bg-blue-600/10 text-blue-400' 
+                          : 'text-gray-400 hover:text-gray-200'
+                      }`}
+                    >
+                       <sub.icon className="w-4 h-4 mr-2 opacity-70 shrink-0" />
+                       {sub.label}
+                    </Link>
+                  )
+                })}
+              </div>
+            )}
+         </div>
+       );
+    }
+
+    return (
+      <div key={item.id} className="relative group">
+          <Link
+            to={`/${item.id}`}
+            onMouseEnter={(e) => handleMouseEnter(e, item.label)}
+            onMouseLeave={handleMouseLeave}
+            className={`flex items-center rounded-lg transition-colors group/link relative ${
+                isOpen 
+                    ? 'px-3 py-2.5' 
+                    : 'justify-center p-2.5'
+            } ${
+              isParentActive 
+                ? 'bg-blue-600/10 text-blue-400 border border-blue-600/20' 
+                : 'text-gray-400 hover:bg-gray-700/50 hover:text-gray-100 border border-transparent'
+            }`}
+          >
+            <item.icon 
+              className={`w-5 h-5 shrink-0 ${isOpen ? 'mr-3' : ''} transition-colors ${
+                isParentActive ? 'text-blue-400' : 'text-gray-500 group-hover/link:text-gray-300'
+              }`} 
+            />
+            {isOpen && <span className="font-medium whitespace-nowrap">{item.label}</span>}
+          </Link>
+      </div>
+    );
+  };
 
   return (
     <>
@@ -215,96 +315,22 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen = true }) => {
           <div className={`h-16 flex items-center border-b border-gray-700 shrink-0 transition-all duration-300 ${isOpen ? 'px-6' : 'justify-center px-0'}`}>
             <Hexagon className="w-8 h-8 text-blue-500 shrink-0" />
             <span className={`text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-cyan-300 ml-3 whitespace-nowrap transition-opacity duration-200 ${isOpen ? 'opacity-100' : 'opacity-0 w-0 hidden'}`}>
-              TDengine
+              {platformName}
             </span>
           </div>
 
-          {/* Nav Items */}
+          {/* Main Nav Items */}
           <nav 
-            className="flex-1 py-6 px-2 space-y-1 overflow-y-auto overflow-x-hidden custom-scrollbar"
+            className="flex-1 py-4 px-2 space-y-1 overflow-y-auto overflow-x-hidden custom-scrollbar"
             onScroll={() => setTooltip(null)}
           >
-            {menuItems.map((item) => {
-              const isExpanded = expandedMenus.includes(item.id);
-              const isParentActive = currentPath === item.id || (item.subItems && currentPath.startsWith(item.id));
-              
-              if (item.subItems) {
-                 return (
-                   <div key={item.id} className="relative group">
-                     <button
-                        onClick={() => toggleMenu(item.id)}
-                        onMouseEnter={(e) => handleMouseEnter(e, item.label)}
-                        onMouseLeave={handleMouseLeave}
-                        className={`w-full flex items-center rounded-lg transition-colors group/btn relative ${
-                          isOpen 
-                            ? 'justify-between px-3 py-2.5' 
-                            : 'justify-center p-2.5'
-                        } ${
-                          isParentActive 
-                            ? 'text-blue-400' 
-                            : 'text-gray-400 hover:bg-gray-700/50 hover:text-gray-100'
-                        }`}
-                      >
-                        <div className="flex items-center">
-                          <item.icon className={`w-5 h-5 shrink-0 ${isOpen ? 'mr-3' : ''} ${isParentActive ? 'text-blue-400' : 'text-gray-500 group-hover/btn:text-gray-300'}`} />
-                          {isOpen && <span className="font-medium whitespace-nowrap">{item.label}</span>}
-                        </div>
-                        {isOpen && (isExpanded ? <ChevronDown className="w-4 h-4 shrink-0" /> : <ChevronRight className="w-4 h-4 shrink-0" />)}
-                      </button>
-                      
-                      {/* Submenu - Only visible when open */}
-                      {isOpen && isExpanded && (
-                        <div className="ml-4 pl-4 border-l border-gray-700 mt-1 space-y-1">
-                          {item.subItems.map(sub => {
-                            const isSubActive = currentPath === sub.id;
-                            return (
-                              <Link
-                                key={sub.id}
-                                to={`/${sub.id}`}
-                                className={`flex items-center px-3 py-2 rounded-lg text-sm transition-colors whitespace-nowrap ${
-                                  isSubActive 
-                                    ? 'bg-blue-600/10 text-blue-400' 
-                                    : 'text-gray-400 hover:text-gray-200'
-                                }`}
-                              >
-                                 <sub.icon className="w-4 h-4 mr-2 opacity-70 shrink-0" />
-                                 {sub.label}
-                              </Link>
-                            )
-                          })}
-                        </div>
-                      )}
-                   </div>
-                 );
-              }
-
-              return (
-                <div key={item.id} className="relative group">
-                    <Link
-                      to={`/${item.id}`}
-                      onMouseEnter={(e) => handleMouseEnter(e, item.label)}
-                      onMouseLeave={handleMouseLeave}
-                      className={`flex items-center rounded-lg transition-colors group/link relative ${
-                          isOpen 
-                              ? 'px-3 py-2.5' 
-                              : 'justify-center p-2.5'
-                      } ${
-                        isParentActive 
-                          ? 'bg-blue-600/10 text-blue-400 border border-blue-600/20' 
-                          : 'text-gray-400 hover:bg-gray-700/50 hover:text-gray-100 border border-transparent'
-                      }`}
-                    >
-                      <item.icon 
-                        className={`w-5 h-5 shrink-0 ${isOpen ? 'mr-3' : ''} transition-colors ${
-                          isParentActive ? 'text-blue-400' : 'text-gray-500 group-hover/link:text-gray-300'
-                        }`} 
-                      />
-                      {isOpen && <span className="font-medium whitespace-nowrap">{item.label}</span>}
-                    </Link>
-                </div>
-              );
-            })}
+            {menuItems.map(renderMenuItem)}
           </nav>
+
+          {/* Bottom Actions (Settings & Help) */}
+          <div className="px-2 py-2 border-t border-gray-700/50 shrink-0 space-y-1">
+             {bottomMenuItems.map(renderMenuItem)}
+          </div>
 
           {/* Footer Profile Menu */}
           <div className="p-4 border-t border-gray-700 shrink-0" ref={profileRef}>

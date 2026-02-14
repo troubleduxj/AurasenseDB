@@ -1,11 +1,12 @@
+
 import React, { useState } from 'react';
 import { Save, Monitor, Globe, Wrench, Clock, RefreshCw } from 'lucide-react';
+import { useSystem } from '../contexts/SystemContext';
 
 export const SystemSettings: React.FC = () => {
+  const { platformName, setPlatformName, timezone, setTimezone } = useSystem();
   const [settings, setSettings] = useState({
-    platformName: 'TDengine Enterprise Platform',
     language: 'en',
-    timezone: 'UTC',
     theme: 'dark',
     dateFormat: 'YYYY-MM-DD HH:mm:ss',
     logLevel: 'INFO',
@@ -40,8 +41,8 @@ export const SystemSettings: React.FC = () => {
               <label className="block text-sm font-medium text-gray-400 mb-1">Platform Name</label>
               <input
                 type="text"
-                value={settings.platformName}
-                onChange={(e) => handleChange('platformName', e.target.value)}
+                value={platformName}
+                onChange={(e) => setPlatformName(e.target.value)}
                 className="w-full bg-gray-900 border border-gray-600 rounded-lg px-3 py-2 text-gray-200 focus:ring-blue-500 focus:border-blue-500 outline-none"
               />
             </div>
@@ -61,14 +62,17 @@ export const SystemSettings: React.FC = () => {
               <div>
                 <label className="block text-sm font-medium text-gray-400 mb-1">Timezone</label>
                 <select
-                  value={settings.timezone}
-                  onChange={(e) => handleChange('timezone', e.target.value)}
+                  value={timezone}
+                  onChange={(e) => setTimezone(e.target.value)}
                   className="w-full bg-gray-900 border border-gray-600 rounded-lg px-3 py-2 text-gray-200 outline-none"
                 >
+                  {/* Always include the current/detected timezone as the first option if not listed */}
+                  <option value={timezone}>{timezone} (Detected)</option>
                   <option value="UTC">UTC (GMT+0)</option>
-                  <option value="EST">EST (GMT-5)</option>
-                  <option value="PST">PST (GMT-8)</option>
-                  <option value="CST">CST (GMT+8)</option>
+                  <option value="America/New_York">EST (New York)</option>
+                  <option value="America/Los_Angeles">PST (Los Angeles)</option>
+                  <option value="Asia/Shanghai">CST (Shanghai)</option>
+                  <option value="Europe/London">GMT (London)</option>
                 </select>
               </div>
             </div>

@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Layout } from './components/Layout';
@@ -44,70 +45,90 @@ import { SystemConnect } from './pages/SystemConnect';
 import { SystemNotifications } from './pages/SystemNotifications';
 import { SystemSecurity } from './pages/SystemSecurity';
 
+// User Settings Page
+import { SettingsPage } from './pages/Settings';
+import { HelpCenter } from './pages/HelpCenter';
+import { HelpDocs } from './pages/HelpDocs';
+import { HelpApiRef } from './pages/HelpApiRef';
+import { HelpCommunity } from './pages/HelpCommunity';
+
 import { Ecosystem } from './pages/Ecosystem';
 import { Page } from './types';
+import { SystemProvider } from './contexts/SystemContext';
 
 const App: React.FC = () => {
   return (
-    <HashRouter>
-      <Layout>
-        <Routes>
-          <Route path="/" element={<Navigate to={`/${Page.DASHBOARD}`} replace />} />
-          <Route path={`/${Page.DASHBOARD}`} element={<Dashboard />} />
-          
-          {/* Data Ingestion Routes */}
-          <Route path="/ingestion" element={<Navigate to={`/${Page.INGESTION_SOURCES}`} replace />} />
-          <Route path={`/${Page.INGESTION_SOURCES}`} element={<Ingestion />} />
-          <Route path={`/${Page.INGESTION_PLUGINS}`} element={<IngestionPlugins />} />
-          <Route path={`/${Page.INGESTION_MAPPING}`} element={<IngestionMapping />} />
-          <Route path={`/${Page.INGESTION_PIPELINES}`} element={<IngestionPipelines />} />
-          <Route path={`/${Page.INGESTION_DLQ}`} element={<IngestionDLQ />} />
+    <SystemProvider>
+      <HashRouter>
+        <Layout>
+          <Routes>
+            <Route path="/" element={<Navigate to={`/${Page.DASHBOARD}`} replace />} />
+            <Route path={`/${Page.DASHBOARD}`} element={<Dashboard />} />
+            
+            {/* Data Ingestion Routes */}
+            <Route path="/ingestion" element={<Navigate to={`/${Page.INGESTION_SOURCES}`} replace />} />
+            <Route path={`/${Page.INGESTION_SOURCES}`} element={<Ingestion />} />
+            <Route path={`/${Page.INGESTION_PLUGINS}`} element={<IngestionPlugins />} />
+            <Route path={`/${Page.INGESTION_MAPPING}`} element={<IngestionMapping />} />
+            <Route path={`/${Page.INGESTION_PIPELINES}`} element={<IngestionPipelines />} />
+            <Route path={`/${Page.INGESTION_DLQ}`} element={<IngestionDLQ />} />
 
-          {/* Stream Computing Routes */}
-          <Route path="/computing" element={<Navigate to={`/${Page.COMPUTING_NATIVE}`} replace />} />
-          <Route path={`/${Page.COMPUTING_NATIVE}`} element={<ComputingNative />} />
-          <Route path={`/${Page.COMPUTING_FLINK_JOBS}`} element={<ComputingFlinkJobs />} />
-          <Route path={`/${Page.COMPUTING_FLINK_SQL}`} element={<ComputingFlinkSQL />} />
-          <Route path={`/${Page.COMPUTING_TOPOLOGY}`} element={<ComputingTopology />} />
-          <Route path={`/${Page.COMPUTING_MONITOR}`} element={<ComputingMonitor />} />
+            {/* Stream Computing Routes */}
+            <Route path="/computing" element={<Navigate to={`/${Page.COMPUTING_NATIVE}`} replace />} />
+            <Route path={`/${Page.COMPUTING_NATIVE}`} element={<ComputingNative />} />
+            <Route path={`/${Page.COMPUTING_FLINK_JOBS}`} element={<ComputingFlinkJobs />} />
+            <Route path={`/${Page.COMPUTING_FLINK_SQL}`} element={<ComputingFlinkSQL />} />
+            <Route path={`/${Page.COMPUTING_TOPOLOGY}`} element={<ComputingTopology />} />
+            <Route path={`/${Page.COMPUTING_MONITOR}`} element={<ComputingMonitor />} />
 
-          {/* Unified Query Service Routes */}
-          <Route path="/query" element={<Navigate to={`/${Page.QUERY_WORKBENCH}`} replace />} />
-          <Route path={`/${Page.QUERY_WORKBENCH}`} element={<QueryWorkbench />} />
-          <Route path={`/${Page.QUERY_REPORTS}`} element={<QueryReports />} />
-          <Route path={`/${Page.QUERY_API}`} element={<QueryApi />} />
-          <Route path={`/${Page.QUERY_VIRTUAL_VIEWS}`} element={<QueryVirtualViews />} />
-          <Route path={`/${Page.QUERY_SNIPPETS}`} element={<QuerySnippets />} />
-          
-          {/* Metadata Routes */}
-          <Route path="/metadata" element={<Navigate to={`/${Page.METADATA_MAP}`} replace />} />
-          <Route path={`/${Page.METADATA_MAP}`} element={<MetadataMap />} />
-          <Route path={`/${Page.METADATA_LIFECYCLE}`} element={<MetadataLifecycle />} />
-          <Route path={`/${Page.METADATA_SCHEMA}`} element={<MetadataSchema />} />
-          <Route path={`/${Page.METADATA_LINEAGE}`} element={<MetadataLineage />} />
+            {/* Unified Query Service Routes */}
+            <Route path="/query" element={<Navigate to={`/${Page.QUERY_WORKBENCH}`} replace />} />
+            <Route path={`/${Page.QUERY_WORKBENCH}`} element={<QueryWorkbench />} />
+            <Route path={`/${Page.QUERY_REPORTS}`} element={<QueryReports />} />
+            <Route path={`/${Page.QUERY_API}`} element={<QueryApi />} />
+            <Route path={`/${Page.QUERY_VIRTUAL_VIEWS}`} element={<QueryVirtualViews />} />
+            <Route path={`/${Page.QUERY_SNIPPETS}`} element={<QuerySnippets />} />
+            
+            {/* Metadata Routes */}
+            <Route path="/metadata" element={<Navigate to={`/${Page.METADATA_MAP}`} replace />} />
+            <Route path={`/${Page.METADATA_MAP}`} element={<MetadataMap />} />
+            <Route path={`/${Page.METADATA_LIFECYCLE}`} element={<MetadataLifecycle />} />
+            <Route path={`/${Page.METADATA_SCHEMA}`} element={<MetadataSchema />} />
+            <Route path={`/${Page.METADATA_LINEAGE}`} element={<MetadataLineage />} />
 
-          {/* Operations Routes */}
-          <Route path="/operations" element={<Navigate to={`/${Page.OPERATIONS_CLUSTER}`} replace />} />
-          <Route path={`/${Page.OPERATIONS_CLUSTER}`} element={<OperationsCluster />} />
-          <Route path={`/${Page.OPERATIONS_NODES}`} element={<OperationsNodes />} />
-          <Route path={`/${Page.OPERATIONS_DATA}`} element={<OperationsData />} />
-          <Route path={`/${Page.OPERATIONS_SLOW_QUERY}`} element={<OperationsSlowQuery />} />
-          <Route path={`/${Page.OPERATIONS_LOGS}`} element={<OperationsLogs />} />
-          <Route path={`/${Page.OPERATIONS_TENANTS}`} element={<OperationsTenants />} />
-          <Route path={`/${Page.OPERATIONS_ALERTS}`} element={<OperationsAlerts />} />
-          <Route path={`/${Page.OPERATIONS_BACKUP}`} element={<OperationsBackup />} />
+            {/* Operations Routes */}
+            <Route path="/operations" element={<Navigate to={`/${Page.OPERATIONS_CLUSTER}`} replace />} />
+            <Route path={`/${Page.OPERATIONS_CLUSTER}`} element={<OperationsCluster />} />
+            <Route path={`/${Page.OPERATIONS_NODES}`} element={<OperationsNodes />} />
+            <Route path={`/${Page.OPERATIONS_DATA}`} element={<OperationsData />} />
+            <Route path={`/${Page.OPERATIONS_SLOW_QUERY}`} element={<OperationsSlowQuery />} />
+            <Route path={`/${Page.OPERATIONS_LOGS}`} element={<OperationsLogs />} />
+            <Route path={`/${Page.OPERATIONS_TENANTS}`} element={<OperationsTenants />} />
+            <Route path={`/${Page.OPERATIONS_ALERTS}`} element={<OperationsAlerts />} />
+            <Route path={`/${Page.OPERATIONS_BACKUP}`} element={<OperationsBackup />} />
 
-          {/* System Management Routes */}
-          <Route path="/system" element={<Navigate to={`/${Page.SYSTEM_SETTINGS}`} replace />} />
-          <Route path={`/${Page.SYSTEM_SETTINGS}`} element={<SystemSettings />} />
-          <Route path={`/${Page.SYSTEM_CONNECT}`} element={<SystemConnect />} />
-          <Route path={`/${Page.SYSTEM_NOTIFICATIONS}`} element={<SystemNotifications />} />
-          <Route path={`/${Page.SYSTEM_SECURITY}`} element={<SystemSecurity />} />
+            {/* System Management Routes */}
+            <Route path="/system" element={<Navigate to={`/${Page.SYSTEM_SETTINGS}`} replace />} />
+            <Route path={`/${Page.SYSTEM_SETTINGS}`} element={<SystemSettings />} />
+            <Route path={`/${Page.SYSTEM_CONNECT}`} element={<SystemConnect />} />
+            <Route path={`/${Page.SYSTEM_NOTIFICATIONS}`} element={<SystemNotifications />} />
+            <Route path={`/${Page.SYSTEM_SECURITY}`} element={<SystemSecurity />} />
 
-          <Route path={`/${Page.ECOSYSTEM}`} element={<Ecosystem />} />
-        </Routes>
-      </Layout>
-    </HashRouter>
+            {/* User Settings Routes */}
+            <Route path="/settings" element={<Navigate to="/settings/profile" replace />} />
+            <Route path="/settings/:tab" element={<SettingsPage />} />
+
+            {/* Help Center Routes */}
+            <Route path={`/${Page.HELP_CENTER}`} element={<HelpCenter />} />
+            <Route path={`/${Page.HELP_DOCS}`} element={<HelpDocs />} />
+            <Route path={`/${Page.HELP_API}`} element={<HelpApiRef />} />
+            <Route path={`/${Page.HELP_COMMUNITY}`} element={<HelpCommunity />} />
+
+            <Route path={`/${Page.ECOSYSTEM}`} element={<Ecosystem />} />
+          </Routes>
+        </Layout>
+      </HashRouter>
+    </SystemProvider>
   );
 };
 

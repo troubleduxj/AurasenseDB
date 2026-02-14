@@ -105,5 +105,9 @@ export enum Page {
   SYSTEM_SETTINGS = 'system/settings',
   SYSTEM_CONNECT = 'system/connect',
   SYSTEM_NOTIFICATIONS = 'system/notifications',
-  SYSTEM_SECURITY = 'system/security'
+  SYSTEM_SECURITY = 'system/security',
+  HELP_CENTER = 'help-center',
+  HELP_DOCS = 'help-center/docs',
+  HELP_API = 'help-center/api',
+  HELP_COMMUNITY = 'help-center/community'
 }
