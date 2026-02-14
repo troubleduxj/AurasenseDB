@@ -1,10 +1,23 @@
-import React from 'react';
-import { Bell, Search, Settings, HelpCircle } from 'lucide-react';
 
-export const TopBar: React.FC = () => {
+import React from 'react';
+import { Bell, Search, Settings, HelpCircle, PanelLeft } from 'lucide-react';
+
+interface TopBarProps {
+  onToggleSidebar?: () => void;
+  isSidebarOpen?: boolean;
+}
+
+export const TopBar: React.FC<TopBarProps> = ({ onToggleSidebar, isSidebarOpen = true }) => {
   return (
     <header className="h-16 bg-gray-800/50 border-b border-gray-700 flex items-center justify-between px-6 backdrop-blur-sm sticky top-0 z-10">
-      <div className="flex items-center flex-1 max-w-xl">
+      <div className="flex items-center flex-1 max-w-xl gap-4">
+        <button 
+          onClick={onToggleSidebar}
+          className="p-2 text-gray-400 hover:text-white hover:bg-gray-700/50 rounded-lg transition-colors focus:outline-none"
+          title={isSidebarOpen ? "Collapse Sidebar" : "Expand Sidebar"}
+        >
+          <PanelLeft className={`w-5 h-5 transition-transform duration-300 ${!isSidebarOpen ? 'rotate-180' : ''}`} />
+        </button>
         <div className="relative w-full">
           <span className="absolute inset-y-0 left-0 flex items-center pl-3">
             <Search className="w-4 h-4 text-gray-500" />

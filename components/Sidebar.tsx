@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+
+import React, { useState, useEffect, useRef } from 'react';
 import { useLocation, Link } from 'react-router-dom';
 import { 
   LayoutDashboard, 
@@ -39,16 +40,32 @@ import {
   Sliders,
   Link2,
   AlertOctagon,
-  FileText
+  FileText,
+  LogOut,
+  CreditCard,
+  Sparkles,
+  User,
+  ChevronsUpDown
 } from 'lucide-react';
 import { Page } from '../types';
 
-export const Sidebar: React.FC = () => {
+interface SidebarProps {
+  isOpen?: boolean;
+}
+
+export const Sidebar: React.FC<SidebarProps> = ({ isOpen = true }) => {
   const location = useLocation();
   const currentPath = location.pathname.substring(1);
   
   // State to manage expanded menus.
   const [expandedMenus, setExpandedMenus] = useState<string[]>([]);
+  
+  // State for Tooltip (Fixed Position to avoid clipping)
+  const [tooltip, setTooltip] = useState<{ top: number; text: string } | null>(null);
+
+  // State for Profile Menu
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const profileRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (currentPath.startsWith('ingestion')) {
@@ -71,10 +88,41 @@ export const Sidebar: React.FC = () => {
     }
   }, [currentPath]);
 
+  // Close profile menu on click outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+        if (profileRef.current && !profileRef.current.contains(event.target as Node)) {
+            setIsProfileOpen(false);
+        }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+        document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
   const toggleMenu = (id: string) => {
-    setExpandedMenus(prev => 
-      prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id]
-    );
+    // Only toggle if sidebar is open to avoid confusing UX in collapsed state
+    if (isOpen) {
+        setExpandedMenus(prev => 
+          prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id]
+        );
+    }
+  };
+
+  const handleMouseEnter = (e: React.MouseEvent, label: string) => {
+      if (!isOpen) {
+          const rect = e.currentTarget.getBoundingClientRect();
+          setTooltip({
+              top: rect.top + rect.height / 2,
+              text: label
+          });
+      }
+  };
+
+  const handleMouseLeave = () => {
+      setTooltip(null);
   };
 
   const menuItems = [
@@ -156,94 +204,199 @@ export const Sidebar: React.FC = () => {
   ];
 
   return (
-    <aside className="w-64 bg-gray-800 border-r border-gray-700 flex flex-col shrink-0 transition-all duration-300">
-      <div className="h-16 flex items-center px-6 border-b border-gray-700">
-        <Hexagon className="w-8 h-8 text-blue-500 mr-3" />
-        <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-cyan-300">
-          TDengine
-        </span>
-      </div>
-
-      <nav className="flex-1 py-6 px-3 space-y-1 overflow-y-auto">
-        {menuItems.map((item) => {
-          const isExpanded = expandedMenus.includes(item.id);
-          const isParentActive = currentPath === item.id || (item.subItems && currentPath.startsWith(item.id));
-          
-          if (item.subItems) {
-             return (
-               <div key={item.id}>
-                 <button
-                    onClick={() => toggleMenu(item.id)}
-                    className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg transition-colors group ${
-                      isParentActive 
-                        ? 'text-blue-400' 
-                        : 'text-gray-400 hover:bg-gray-700/50 hover:text-gray-100'
-                    }`}
-                  >
-                    <div className="flex items-center">
-                      <item.icon className={`w-5 h-5 mr-3 ${isParentActive ? 'text-blue-400' : 'text-gray-500 group-hover:text-gray-300'}`} />
-                      <span className="font-medium">{item.label}</span>
-                    </div>
-                    {isExpanded ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
-                  </button>
-                  
-                  {isExpanded && (
-                    <div className="ml-4 pl-4 border-l border-gray-700 mt-1 space-y-1">
-                      {item.subItems.map(sub => {
-                        const isSubActive = currentPath === sub.id;
-                        return (
-                          <Link
-                            key={sub.id}
-                            to={`/${sub.id}`}
-                            className={`flex items-center px-3 py-2 rounded-lg text-sm transition-colors ${
-                              isSubActive 
-                                ? 'bg-blue-600/10 text-blue-400' 
-                                : 'text-gray-400 hover:text-gray-200'
-                            }`}
-                          >
-                             <sub.icon className="w-4 h-4 mr-2 opacity-70" />
-                             {sub.label}
-                          </Link>
-                        )
-                      })}
-                    </div>
-                  )}
-               </div>
-             );
-          }
-
-          return (
-            <Link
-              key={item.id}
-              to={`/${item.id}`}
-              className={`flex items-center px-3 py-2.5 rounded-lg transition-colors group ${
-                isParentActive 
-                  ? 'bg-blue-600/10 text-blue-400 border border-blue-600/20' 
-                  : 'text-gray-400 hover:bg-gray-700/50 hover:text-gray-100'
-              }`}
-            >
-              <item.icon 
-                className={`w-5 h-5 mr-3 transition-colors ${
-                  isParentActive ? 'text-blue-400' : 'text-gray-500 group-hover:text-gray-300'
-                }`} 
-              />
-              <span className="font-medium">{item.label}</span>
-            </Link>
-          );
-        })}
-      </nav>
-
-      <div className="p-4 border-t border-gray-700">
-        <div className="flex items-center space-x-3">
-          <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-500 to-purple-500 flex items-center justify-center font-bold text-xs">
-            A
+    <>
+      <aside 
+          className={`bg-gray-800 border-r border-gray-700 flex flex-col shrink-0 transition-all duration-300 overflow-visible ${
+              isOpen ? 'w-64' : 'w-16'
+          }`}
+      >
+        <div className="flex flex-col h-full w-full overflow-hidden">
+          {/* Header */}
+          <div className={`h-16 flex items-center border-b border-gray-700 shrink-0 transition-all duration-300 ${isOpen ? 'px-6' : 'justify-center px-0'}`}>
+            <Hexagon className="w-8 h-8 text-blue-500 shrink-0" />
+            <span className={`text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-cyan-300 ml-3 whitespace-nowrap transition-opacity duration-200 ${isOpen ? 'opacity-100' : 'opacity-0 w-0 hidden'}`}>
+              TDengine
+            </span>
           </div>
-          <div>
-            <p className="text-sm font-medium text-gray-200">Admin User</p>
-            <p className="text-xs text-gray-500">admin@tdengine.local</p>
+
+          {/* Nav Items */}
+          <nav 
+            className="flex-1 py-6 px-2 space-y-1 overflow-y-auto overflow-x-hidden custom-scrollbar"
+            onScroll={() => setTooltip(null)}
+          >
+            {menuItems.map((item) => {
+              const isExpanded = expandedMenus.includes(item.id);
+              const isParentActive = currentPath === item.id || (item.subItems && currentPath.startsWith(item.id));
+              
+              if (item.subItems) {
+                 return (
+                   <div key={item.id} className="relative group">
+                     <button
+                        onClick={() => toggleMenu(item.id)}
+                        onMouseEnter={(e) => handleMouseEnter(e, item.label)}
+                        onMouseLeave={handleMouseLeave}
+                        className={`w-full flex items-center rounded-lg transition-colors group/btn relative ${
+                          isOpen 
+                            ? 'justify-between px-3 py-2.5' 
+                            : 'justify-center p-2.5'
+                        } ${
+                          isParentActive 
+                            ? 'text-blue-400' 
+                            : 'text-gray-400 hover:bg-gray-700/50 hover:text-gray-100'
+                        }`}
+                      >
+                        <div className="flex items-center">
+                          <item.icon className={`w-5 h-5 shrink-0 ${isOpen ? 'mr-3' : ''} ${isParentActive ? 'text-blue-400' : 'text-gray-500 group-hover/btn:text-gray-300'}`} />
+                          {isOpen && <span className="font-medium whitespace-nowrap">{item.label}</span>}
+                        </div>
+                        {isOpen && (isExpanded ? <ChevronDown className="w-4 h-4 shrink-0" /> : <ChevronRight className="w-4 h-4 shrink-0" />)}
+                      </button>
+                      
+                      {/* Submenu - Only visible when open */}
+                      {isOpen && isExpanded && (
+                        <div className="ml-4 pl-4 border-l border-gray-700 mt-1 space-y-1">
+                          {item.subItems.map(sub => {
+                            const isSubActive = currentPath === sub.id;
+                            return (
+                              <Link
+                                key={sub.id}
+                                to={`/${sub.id}`}
+                                className={`flex items-center px-3 py-2 rounded-lg text-sm transition-colors whitespace-nowrap ${
+                                  isSubActive 
+                                    ? 'bg-blue-600/10 text-blue-400' 
+                                    : 'text-gray-400 hover:text-gray-200'
+                                }`}
+                              >
+                                 <sub.icon className="w-4 h-4 mr-2 opacity-70 shrink-0" />
+                                 {sub.label}
+                              </Link>
+                            )
+                          })}
+                        </div>
+                      )}
+                   </div>
+                 );
+              }
+
+              return (
+                <div key={item.id} className="relative group">
+                    <Link
+                      to={`/${item.id}`}
+                      onMouseEnter={(e) => handleMouseEnter(e, item.label)}
+                      onMouseLeave={handleMouseLeave}
+                      className={`flex items-center rounded-lg transition-colors group/link relative ${
+                          isOpen 
+                              ? 'px-3 py-2.5' 
+                              : 'justify-center p-2.5'
+                      } ${
+                        isParentActive 
+                          ? 'bg-blue-600/10 text-blue-400 border border-blue-600/20' 
+                          : 'text-gray-400 hover:bg-gray-700/50 hover:text-gray-100 border border-transparent'
+                      }`}
+                    >
+                      <item.icon 
+                        className={`w-5 h-5 shrink-0 ${isOpen ? 'mr-3' : ''} transition-colors ${
+                          isParentActive ? 'text-blue-400' : 'text-gray-500 group-hover/link:text-gray-300'
+                        }`} 
+                      />
+                      {isOpen && <span className="font-medium whitespace-nowrap">{item.label}</span>}
+                    </Link>
+                </div>
+              );
+            })}
+          </nav>
+
+          {/* Footer Profile Menu */}
+          <div className="p-4 border-t border-gray-700 shrink-0" ref={profileRef}>
+            <div className="relative">
+                {isProfileOpen && (
+                    <div className={`absolute bottom-full left-0 mb-4 w-64 bg-[#0F172A] border border-gray-700 rounded-xl shadow-2xl overflow-hidden z-50 animate-in fade-in slide-in-from-bottom-2 ${!isOpen ? 'left-14 bottom-0' : ''}`}>
+                       {/* Header */}
+                       <div className="p-4 border-b border-gray-700 flex items-center gap-3 bg-gray-800/50">
+                            <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-blue-500 to-purple-500 flex items-center justify-center font-bold text-sm text-white shrink-0">
+                                A
+                            </div>
+                            <div className="overflow-hidden">
+                                <p className="text-sm font-bold text-gray-100 truncate">Admin User</p>
+                                <p className="text-xs text-gray-400 truncate">admin@tdengine.local</p>
+                            </div>
+                       </div>
+                       
+                       {/* Upgrade */}
+                       <div className="p-2">
+                           <button className="w-full flex items-center gap-3 px-3 py-2 text-sm text-gray-200 hover:bg-gray-800 rounded-lg transition-colors group">
+                               <Sparkles className="w-4 h-4 text-yellow-400 group-hover:text-yellow-300" /> 
+                               Upgrade to Pro
+                           </button>
+                       </div>
+                       
+                       <div className="h-px bg-gray-700 mx-2"></div>
+                       
+                       {/* Links */}
+                       <div className="p-2 space-y-0.5">
+                           <button className="w-full flex items-center gap-3 px-3 py-2 text-sm text-gray-300 hover:bg-gray-800 rounded-lg transition-colors hover:text-white">
+                               <User className="w-4 h-4" /> Account
+                           </button>
+                           <button className="w-full flex items-center gap-3 px-3 py-2 text-sm text-gray-300 hover:bg-gray-800 rounded-lg transition-colors hover:text-white">
+                               <CreditCard className="w-4 h-4" /> Billing
+                           </button>
+                           <button className="w-full flex items-center gap-3 px-3 py-2 text-sm text-gray-300 hover:bg-gray-800 rounded-lg transition-colors hover:text-white">
+                               <Bell className="w-4 h-4" /> Notifications
+                           </button>
+                       </div>
+
+                       <div className="h-px bg-gray-700 mx-2"></div>
+
+                       {/* Sign Out */}
+                       <div className="p-2">
+                           <button className="w-full flex items-center gap-3 px-3 py-2 text-sm text-red-400 hover:bg-red-900/10 rounded-lg transition-colors">
+                               <LogOut className="w-4 h-4" /> Sign out
+                           </button>
+                       </div>
+                    </div>
+                )}
+
+                <button 
+                    onClick={() => setIsProfileOpen(!isProfileOpen)}
+                    className={`flex items-center w-full rounded-xl transition-all duration-200 group ${
+                        isOpen 
+                        ? 'px-3 py-2 hover:bg-gray-700/50' 
+                        : 'justify-center p-2 hover:bg-gray-700/50'
+                    } ${isProfileOpen ? 'bg-gray-700/50' : ''}`}
+                >
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-500 to-purple-500 flex items-center justify-center font-bold text-xs shrink-0 text-white shadow-lg shadow-purple-900/20">
+                      A
+                    </div>
+                    {isOpen && (
+                        <div className="ml-3 text-left flex-1 min-w-0">
+                          <p className="text-sm font-medium text-gray-200 truncate group-hover:text-white transition-colors">Admin User</p>
+                          <p className="text-xs text-gray-500 truncate">admin@tdengine.local</p>
+                        </div>
+                    )}
+                    {isOpen && (
+                        <ChevronsUpDown className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${isProfileOpen ? 'text-gray-300' : ''}`} />
+                    )}
+                </button>
+            </div>
           </div>
         </div>
-      </div>
-    </aside>
+      </aside>
+
+      {/* Fixed Tooltip Portal */}
+      {tooltip && !isOpen && (
+        <div 
+            className="fixed z-[100] px-3 py-2 bg-[#0F172A] text-white text-xs font-medium rounded-md shadow-xl border border-gray-700 animate-in fade-in zoom-in-95 duration-150 pointer-events-none"
+            style={{ 
+                left: '4.5rem', // 16 (4rem) width + margin
+                top: tooltip.top,
+                transform: 'translateY(-50%)'
+            }}
+        >
+            {tooltip.text}
+            {/* Arrow */}
+            <div className="absolute left-0 top-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 bg-[#0F172A] border-l border-b border-gray-700 transform rotate-45"></div>
+        </div>
+      )}
+    </>
   );
 };
