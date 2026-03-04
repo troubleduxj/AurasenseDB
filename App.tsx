@@ -9,6 +9,17 @@ import { IngestionMapping } from './pages/IngestionMapping';
 import { IngestionPipelines } from './pages/IngestionPipelines';
 import { IngestionDLQ } from './pages/IngestionDLQ';
 
+// Collector Pages
+import { CollectorAgents } from './pages/CollectorAgents';
+import { CollectorConfigs } from './pages/CollectorConfigs';
+import { CollectorMonitor } from './pages/CollectorMonitor';
+
+// Realtime Pages
+import { RealtimeLive } from './pages/RealtimeLive';
+import { RealtimeTables } from './pages/RealtimeTables';
+import { RealtimeDevices } from './pages/RealtimeDevices';
+import { RealtimeHistory } from './pages/RealtimeHistory';
+
 // Computing Pages
 import { ComputingNative } from './pages/ComputingNative';
 import { ComputingFlinkJobs } from './pages/ComputingFlinkJobs';
@@ -65,6 +76,16 @@ const App: React.FC = () => {
             <Route path="/" element={<Navigate to={`/${Page.DASHBOARD}`} replace />} />
             <Route path={`/${Page.DASHBOARD}`} element={<Dashboard />} />
             
+            {/* Realtime Explorer Routes */}
+            <Route path="/realtime" element={<Navigate to={`/${Page.REALTIME_LIVE}`} replace />} />
+            <Route path={`/${Page.REALTIME_LIVE}`} element={<RealtimeLive />} />
+            <Route path={`/${Page.REALTIME_TABLES}`} element={<RealtimeTables />} />
+            <Route path={`/${Page.REALTIME_QUERY}`} element={<QueryWorkbench />} />
+            <Route path={`/${Page.REALTIME_DEVICES}`} element={<RealtimeDevices />} />
+            <Route path={`/${Page.REALTIME_STREAMS}`} element={<ComputingMonitor />} />
+            <Route path={`/${Page.REALTIME_HISTORY}`} element={<RealtimeHistory />} />
+            <Route path={`/${Page.REALTIME_VIEWS}`} element={<QueryVirtualViews />} />
+
             {/* Data Ingestion Routes */}
             <Route path="/ingestion" element={<Navigate to={`/${Page.INGESTION_SOURCES}`} replace />} />
             <Route path={`/${Page.INGESTION_SOURCES}`} element={<Ingestion />} />
@@ -72,6 +93,12 @@ const App: React.FC = () => {
             <Route path={`/${Page.INGESTION_MAPPING}`} element={<IngestionMapping />} />
             <Route path={`/${Page.INGESTION_PIPELINES}`} element={<IngestionPipelines />} />
             <Route path={`/${Page.INGESTION_DLQ}`} element={<IngestionDLQ />} />
+
+            {/* Collector Management Routes */}
+            <Route path="/collector" element={<Navigate to={`/${Page.COLLECTOR_AGENTS}`} replace />} />
+            <Route path={`/${Page.COLLECTOR_AGENTS}`} element={<CollectorAgents />} />
+            <Route path={`/${Page.COLLECTOR_CONFIGS}`} element={<CollectorConfigs />} />
+            <Route path={`/${Page.COLLECTOR_MONITOR}`} element={<CollectorMonitor />} />
 
             {/* Stream Computing Routes */}
             <Route path="/computing" element={<Navigate to={`/${Page.COMPUTING_NATIVE}`} replace />} />

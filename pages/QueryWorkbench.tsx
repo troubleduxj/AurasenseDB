@@ -1,4 +1,6 @@
+
 import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { Play, Sparkles, Save, Clock, Trash2, Box, Wand2, Database, AlertCircle, Search, Gauge, ArrowRight, Scan, Filter, Calculator, Network, RefreshCw } from 'lucide-react';
 import { generateSqlFromNaturalLanguage, explainQueryPlan } from '../services/geminiService';
 
@@ -20,7 +22,8 @@ interface ExplainNode {
 }
 
 export const QueryWorkbench: React.FC = () => {
-  const [query, setQuery] = useState('SELECT avg(voltage) FROM meters \nWHERE $last_24h \nAND device_group = {{groupId}} \nGROUP BY $interval(1h);');
+  const location = useLocation();
+  const [query, setQuery] = useState(location.state?.sql || 'SELECT avg(voltage) FROM meters \nWHERE $last_24h \nAND device_group = {{groupId}} \nGROUP BY $interval(1h);');
   const [prompt, setPrompt] = useState('');
   const [loadingAi, setLoadingAi] = useState(false);
   const [logs, setLogs] = useState<string[]>(['System ready. TD-SQL+ Syntax enabled.']);
@@ -32,6 +35,13 @@ export const QueryWorkbench: React.FC = () => {
   const [explainResult, setExplainResult] = useState<ExplainNode | null>(null);
   const [aiExplain, setAiExplain] = useState<string | null>(null);
   const [analyzingPlan, setAnalyzingPlan] = useState(false);
+
+  // Update query if location state changes (e.g. navigation from history)
+  useEffect(() => {
+      if (location.state?.sql) {
+          setQuery(location.state.sql);
+      }
+  }, [location.state]);
 
   // Detect parameters in query ({{param}})
   useEffect(() => {

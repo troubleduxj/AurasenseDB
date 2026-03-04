@@ -293,7 +293,7 @@ export const OperationsSlowQuery: React.FC = () => {
                                <User className="w-3 h-3 mr-1" /> Top Users
                            </h4>
                            <div className="space-y-2">
-                               {Object.entries(selectedPattern?.users || {}).sort((a,b) => b[1] - a[1]).map(([u, count]) => (
+                               {Object.entries(selectedPattern?.users || {} as Record<string, number>).sort((a,b) => (b[1] as number) - (a[1] as number)).map(([u, count]) => (
                                    <div key={u} className="flex justify-between text-sm">
                                        <span className="text-gray-300">{u}</span>
                                        <span className="text-gray-500 font-mono">{count}</span>
@@ -306,7 +306,7 @@ export const OperationsSlowQuery: React.FC = () => {
                                <Monitor className="w-3 h-3 mr-1" /> Top Client IPs
                            </h4>
                            <div className="space-y-2">
-                               {Object.entries(selectedPattern?.ips || {}).sort((a,b) => b[1] - a[1]).map(([ip, count]) => (
+                               {Object.entries(selectedPattern?.ips || {} as Record<string, number>).sort((a,b) => (b[1] as number) - (a[1] as number)).map(([ip, count]) => (
                                    <div key={ip} className="flex justify-between text-sm">
                                        <span className="text-gray-300">{ip}</span>
                                        <span className="text-gray-500 font-mono">{count}</span>

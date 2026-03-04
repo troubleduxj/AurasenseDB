@@ -68,12 +68,27 @@ export interface QueryResult {
 
 export enum Page {
   DASHBOARD = 'dashboard',
+  
+  // Realtime Explorer
+  REALTIME = 'realtime',
+  REALTIME_LIVE = 'realtime/live',
+  REALTIME_TABLES = 'realtime/tables',
+  REALTIME_QUERY = 'realtime/query',
+  REALTIME_DEVICES = 'realtime/devices',
+  REALTIME_STREAMS = 'realtime/streams',
+  REALTIME_HISTORY = 'realtime/history',
+  REALTIME_VIEWS = 'realtime/views',
+
   INGESTION = 'ingestion',
   INGESTION_SOURCES = 'ingestion/sources',
   INGESTION_PLUGINS = 'ingestion/plugins',
   INGESTION_MAPPING = 'ingestion/mapping',
   INGESTION_PIPELINES = 'ingestion/pipelines',
   INGESTION_DLQ = 'ingestion/dlq',
+  COLLECTOR = 'collector',
+  COLLECTOR_AGENTS = 'collector/agents',
+  COLLECTOR_CONFIGS = 'collector/configs',
+  COLLECTOR_MONITOR = 'collector/monitor',
   COMPUTING = 'computing',
   COMPUTING_NATIVE = 'computing/native',
   COMPUTING_FLINK_JOBS = 'computing/flink-jobs',

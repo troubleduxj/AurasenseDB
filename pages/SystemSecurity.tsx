@@ -114,7 +114,7 @@ export const SystemSecurity: React.FC = () => {
                       <div className="flex items-center justify-between p-3 bg-gray-700/30 rounded border border-gray-700">
                           <div>
                               <p className="text-sm font-medium text-gray-200">Query Auditing</p>
-                              <p className="text-xs text-gray-500">Log SELECT queries > 1s duration</p>
+                              <p className="text-xs text-gray-500">Log SELECT queries &gt; 1s duration</p>
                           </div>
                           <div className="w-11 h-6 bg-green-600 rounded-full relative cursor-pointer">
                               <div className="w-5 h-5 bg-white rounded-full absolute top-0.5 right-0.5 shadow-sm"></div>

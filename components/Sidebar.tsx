@@ -49,7 +49,12 @@ import {
   Palette,
   Monitor,
   Wrench,
-  HelpCircle
+  HelpCircle,
+  Compass,
+  Radio,
+  Table,
+  TabletSmartphone,
+  Bookmark
 } from 'lucide-react';
 import { Page } from '../types';
 import { useSystem } from '../contexts/SystemContext';
@@ -78,6 +83,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen = true }) => {
         setExpandedMenus(prev => prev.includes(id) ? prev : [...prev, id]);
     };
 
+    if (currentPath.startsWith('realtime')) expand('realtime');
     if (currentPath.startsWith('ingestion')) expand('ingestion');
     if (currentPath.startsWith('metadata')) expand('metadata');
     if (currentPath.startsWith('computing')) expand('computing');
@@ -126,6 +132,20 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen = true }) => {
 
   const menuItems = [
     { id: Page.DASHBOARD, label: 'Dashboard', icon: LayoutDashboard },
+    {
+      id: 'realtime',
+      label: 'Realtime Explorer',
+      icon: Compass,
+      subItems: [
+        { id: Page.REALTIME_LIVE, label: 'Live Data', icon: Radio },
+        { id: Page.REALTIME_TABLES, label: 'Tables & Tags', icon: Table },
+        { id: Page.REALTIME_QUERY, label: 'Query Studio', icon: Terminal },
+        { id: Page.REALTIME_DEVICES, label: 'Device Explorer', icon: TabletSmartphone },
+        { id: Page.REALTIME_STREAMS, label: 'Data Stream Monitor', icon: Activity },
+        { id: Page.REALTIME_HISTORY, label: 'Query History', icon: History },
+        { id: Page.REALTIME_VIEWS, label: 'Saved Views', icon: Bookmark },
+      ]
+    },
     { 
       id: 'ingestion', 
       label: 'Data Ingestion', 
@@ -136,6 +156,16 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen = true }) => {
         { id: Page.INGESTION_MAPPING, label: 'Mapping Rules', icon: GitMerge },
         { id: Page.INGESTION_PIPELINES, label: 'Pipelines (ETL)', icon: Filter },
         { id: Page.INGESTION_DLQ, label: 'Dead Letter Queue', icon: AlertOctagon },
+      ]
+    },
+    {
+      id: 'collector',
+      label: 'Collector Mgmt',
+      icon: Radio,
+      subItems: [
+        { id: Page.COLLECTOR_AGENTS, label: 'Agents', icon: Server },
+        { id: Page.COLLECTOR_CONFIGS, label: 'Configurations', icon: FileText },
+        { id: Page.COLLECTOR_MONITOR, label: 'Monitoring', icon: Activity },
       ]
     },
     { 
@@ -200,9 +230,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen = true }) => {
       ]
     },
     { id: Page.ECOSYSTEM, label: 'Ecosystem', icon: Share2 },
-  ];
-
-  const bottomMenuItems = [
     {
       id: 'settings-bottom',
       label: 'Settings',
@@ -327,10 +354,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen = true }) => {
             {menuItems.map(renderMenuItem)}
           </nav>
 
-          {/* Bottom Actions (Settings & Help) */}
-          <div className="px-2 py-2 border-t border-gray-700/50 shrink-0 space-y-1">
-             {bottomMenuItems.map(renderMenuItem)}
-          </div>
+
 
           {/* Footer Profile Menu */}
           <div className="p-4 border-t border-gray-700 shrink-0" ref={profileRef}>
